@@ -6,8 +6,11 @@ stages:
   - deploy
 
 before_script:
-  - apt-get update && apt-get install -y unzip git curl pkg-config libssl-dev libzip-dev php-pear php-dev
-  - pecl install mongodb-2.0.0
+  - apt-get update && apt-get install -y unzip git curl libzip-dev libssl-dev pkg-config gnupg
+  - mkdir -p /usr/local/etc/php/conf.d
+  - curl -O https://pecl.php.net/get/mongodb-2.0.0.tgz
+  - tar -xzf mongodb-2.0.0.tgz
+  - cd mongodb-2.0.0 && phpize && ./configure && make && make install && cd ..
   - echo "extension=mongodb.so" > /usr/local/etc/php/conf.d/mongodb.ini
   - curl -sS https://getcomposer.org/installer | php
   - mv composer.phar /usr/local/bin/composer
