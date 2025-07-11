@@ -31,3 +31,17 @@ deploy_app:
     - echo "Deployment script (optional)"
   only:
     - tags
+
+pages:
+  stage: deploy
+  script:
+    - cd client
+    - npm install
+    - npm run build
+    - mkdir -p public
+    - cp -r build/* ../public/
+  artifacts:
+    paths:
+      - public
+  only:
+    - main
