@@ -1,12 +1,13 @@
 <?php
-// ✅ Handle CORS preflight request
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: Content-Type");
+header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
+
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    header("Access-Control-Allow-Origin: *");
-    header("Access-Control-Allow-Headers: Content-Type");
-    header("Access-Control-Allow-Methods: POST, OPTIONS");
     http_response_code(200);
     exit();
 }
+
 
 // ✅ Regular CORS headers for actual requests
 header("Access-Control-Allow-Origin: *");
