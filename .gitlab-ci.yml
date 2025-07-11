@@ -3,7 +3,7 @@ stages:
   - test
   - deploy
 
-# ✅ BACKEND BUILD (PHP + MongoDB)
+# ✅ BACKEND BUILD
 build_app:
   stage: build
   image: php:8.2
@@ -22,9 +22,7 @@ build_app:
   only:
     - main
 
-
-
-# ✅ FRONTEND BUILD (React + Node)
+# ✅ FRONTEND BUILD
 build_frontend:
   stage: build
   image: node:18
@@ -34,13 +32,11 @@ build_frontend:
     - npm install
     - npm run build
     - cd ..
-    - rm -rf public             # 💥 Remove if exists
-    - mv client/build public    # ✅ Move to public/
+    - mv client/build public  # 👈 Make sure this line works
   only:
     - main
 
-
-# ✅ TEST STAGE (optional)
+# ✅ TEST
 test_app:
   stage: test
   script:
@@ -48,13 +44,7 @@ test_app:
   only:
     - main
 
-# ✅ DEPLOY STAGE (optional)
-deploy_app:
-  stage: deploy
-  script:
-    - echo "🚀 Deployment script goes here"
-  only:
-    - tags
+# ✅ PAGES DEPLOY
 pages:
   stage: deploy
   image: alpine:latest
@@ -65,5 +55,3 @@ pages:
       - public
   only:
     - main
-
-
