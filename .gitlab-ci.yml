@@ -32,7 +32,10 @@ build_frontend:
     - npm install
     - npm run build
     - cd ..
-    - mv client/build public  # 👈 Make sure this line works
+    - mv client/build ./public  # ✅ move to root
+  artifacts:
+    paths:
+      - public                  # ✅ make sure it's saved
   only:
     - main
 
@@ -52,6 +55,6 @@ pages:
     - echo "📤 Deploying to GitLab Pages"
   artifacts:
     paths:
-      - public
+      - public                 # ✅ deploy the build output
   only:
     - main
