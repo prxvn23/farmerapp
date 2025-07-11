@@ -6,7 +6,8 @@ stages:
   - deploy
 
 before_script:
-  - apt-get update && apt-get install -y unzip git curl libzip-dev zlib1g-dev pkg-config libssl-dev
+  - apt-get update && apt-get install -y unzip git curl libzip-dev zlib1g-dev pkg-config libssl-dev php-pear php-dev
+  - mkdir -p /usr/local/etc/php/conf.d
   - pecl install mongodb-1.19.1 || true
   - echo "extension=mongodb.so" > /usr/local/etc/php/conf.d/mongodb.ini
   - curl -sS https://getcomposer.org/installer | php
