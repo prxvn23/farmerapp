@@ -8,7 +8,7 @@ build_app:
   image: php:8.2
   stage: build
   before_script:
-    - apt-get update && apt-get install -y unzip git curl libzip-dev libssl-dev pkg-config gnupg php-dev
+    - apt-get update && apt-get install -y unzip git curl libzip-dev libssl-dev pkg-config gnupg php8.2-dev
     - curl -O https://pecl.php.net/get/mongodb-2.0.0.tgz
     - tar -xzf mongodb-2.0.0.tgz
     - cd mongodb-2.0.0 && phpize && ./configure && make && make install && cd ..
@@ -23,6 +23,7 @@ build_app:
     - echo "✅ Backend build complete"
   only:
     - main
+
 
 # ✅ FRONTEND BUILD (React + Node)
 build_frontend:
