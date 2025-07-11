@@ -6,7 +6,7 @@ stages:
 image: php:8.2
 
 before_script:
-  - apt-get update && apt-get install -y unzip git curl libzip-dev zlib1g-dev pkg-config libssl-dev libcurl4-openssl-dev
+  - apt-get update && apt-get install -y unzip git curl libzip-dev zlib1g-dev pkg-config libssl-dev
   - pecl install mongodb
   - docker-php-ext-enable mongodb
   - curl -sS https://getcomposer.org/installer | php
@@ -15,7 +15,7 @@ before_script:
 build_app:
   stage: build
   script:
-    - echo "Installing PHP dependencies"
+    - echo "📦 Installing PHP dependencies"
     - cd backend
     - composer install
     - cd ..
@@ -24,25 +24,12 @@ build_app:
 test_app:
   stage: test
   script:
-    - echo "No tests yet"
+    - echo "🧪 No tests yet"
     - echo "✅ Test stage passed"
 
 deploy_app:
   stage: deploy
   script:
-    - echo "Deployment script (optional)"
+    - echo "🚀 Deployment step (optional)"
   only:
     - tags
-pages:
-  stage: deploy
-  script:
-    - cd client
-    - npm install
-    - npm run build
-    - mkdir -p public
-    - cp -r build/* ../public/
-  artifacts:
-    paths:
-      - public
-  only:
-    - main
