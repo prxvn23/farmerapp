@@ -1,16 +1,15 @@
+image: node:18
+
 stages:
-  - build
+  - install
+  - test
 
-image: php:8.2
-
-before_script:
-  - apt-get update && apt-get install -y unzip git curl
-  - curl -sS https://getcomposer.org/installer | php
-  - mv composer.phar /usr/local/bin/composer
-
-build_app:
-  stage: build
+install_dependencies:
+  stage: install
   script:
-    - echo "Installing backend dependencies"
-    - cd backend
-    - composer install
+    - npm install
+
+test_app:
+  stage: test
+  script:
+    - echo "✅ No tests yet"
