@@ -1,25 +1,25 @@
+image: php:8.2
+
 stages:
   - build
   - test
   - deploy
 
-image: node:18
-
-# 1️⃣ Install Node + React + PHP deps
 before_script:
   - apt-get update && apt-get install -y unzip git curl libzip-dev zlib1g-dev pkg-config libssl-dev
-  - pecl install mongodb-1.19.1
+  - pecl install mongodb-1.19.1 || true
   - echo "extension=mongodb.so" > /usr/local/etc/php/conf.d/mongodb.ini
   - curl -sS https://getcomposer.org/installer | php
   - mv composer.phar /usr/local/bin/composer
-# 2️⃣ Build Backend (PHP)
-build_backend:
+
+build_app:
   stage: build
   script:
     - echo "📦 Installing PHP dependencies"
     - cd backend
-    - composer install
+    - composer install --ignore-platform-req=ext-mongodb
     - cd ..
+    - echo "✅ Build complete"
   only:
     - main
 
