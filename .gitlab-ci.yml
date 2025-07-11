@@ -1,47 +1,50 @@
+image: php:8.2
+
 stages:
   - build
   - test
   - deploy
 
-image: php:8.2
-
 before_script:
-  - apt-get update && apt-get install -y unzip git curl libzip-dev zlib1g-dev
+  - apt-get update && apt-get install -y unzip git curl pkg-config libssl-dev libzip-dev php-pear php-dev
+  - pecl install mongodb-2.0.0
+  - echo "extension=mongodb.so" > /usr/local/etc/php/conf.d/mongodb.ini
   - curl -sS https://getcomposer.org/installer | php
   - mv composer.phar /usr/local/bin/composer
 
 build_app:
   stage: build
   script:
-    - echo "Installing PHP dependencies"
+    - echo "📦 Installing PHP dependencies"
     - cd backend
     - composer install
     - cd ..
-    - echo "✅ Build done"
+    - echo "✅ Backend Build complete"
+  only:
+    - main
+
+build_frontend:
+  stage: build
+  image: node:18
+  script:
+    - echo "⚛️ Building React frontend"
+    - cd client
+    - npm install
+    - npm run build
+    - echo "✅ Frontend build complete"
+  only:
+    - main
 
 test_app:
   stage: test
   script:
-    - echo "No tests yet"
-    - echo "✅ Test stage passed"
+    - echo "✅ No tests yet"
+  only:
+    - main
 
 deploy_app:
   stage: deploy
   script:
-    - echo "Deployment script (optional)"
+    - echo "🚀 Deployment step goes here"
   only:
     - tags
-
-pages:
-  stage: deploy
-  script:
-    - cd client
-    - npm install
-    - npm run build
-    - mkdir -p public
-    - cp -r build/* ../public/
-  artifacts:
-    paths:
-      - public
-  only:
-    - main
