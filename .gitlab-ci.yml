@@ -7,11 +7,11 @@ image: node:18
 
 # 1️⃣ Install Node + React + PHP deps
 before_script:
-  - apt-get update && apt-get install -y unzip git curl php php-cli php-mbstring php-xml php-curl libzip-dev
+  - apt-get update && apt-get install -y unzip git curl libzip-dev zlib1g-dev pkg-config libssl-dev
+  - pecl install mongodb-1.19.1
+  - echo "extension=mongodb.so" > /usr/local/etc/php/conf.d/mongodb.ini
   - curl -sS https://getcomposer.org/installer | php
   - mv composer.phar /usr/local/bin/composer
-  - npm install --prefix client
-
 # 2️⃣ Build Backend (PHP)
 build_backend:
   stage: build
