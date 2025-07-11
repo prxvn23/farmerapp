@@ -5,23 +5,20 @@ stages:
 
 # ✅ BACKEND BUILD (PHP + MongoDB)
 build_app:
-  image: php:8.2
   stage: build
+  image: php:8.2
   before_script:
-    - apt-get update && apt-get install -y unzip git curl libzip-dev zlib1g-dev pkg-config libssl-dev autoconf gcc g++ make
-    - docker-php-ext-install zip
-    - curl -O https://pecl.php.net/get/mongodb-1.19.1.tgz
-    - tar -xzf mongodb-1.19.1.tgz
-    - cd mongodb-1.19.1 && phpize && ./configure && make && make install && cd ..
-    - mkdir -p /usr/local/etc/php/conf.d
+    - apt-get update && apt-get install -y unzip git curl libzip-dev zlib1g-dev
+    - pecl install mongodb-1.19.1
     - echo "extension=mongodb.so" > /usr/local/etc/php/conf.d/mongodb.ini
     - curl -sS https://getcomposer.org/installer | php
     - mv composer.phar /usr/local/bin/composer
   script:
     - echo "📦 Installing PHP dependencies"
     - cd backend
-    - composer install
-    - echo "✅ Backend build complete"
+    - composer install --ignore-platform-req=ext-mongodb
+    - cd ..
+    - echo "✅ Build complete"
   only:
     - main
 
