@@ -57,11 +57,13 @@ deploy_app:
     - tags
 pages:
   stage: deploy
+  image: alpine:latest
   script:
-    - echo "Deploying to GitLab Pages"
+    - echo "📤 Deploying to GitLab Pages"
   artifacts:
     paths:
-      - public   # 👈 The directory with your built site
+      - public
   only:
     - main
+
 
