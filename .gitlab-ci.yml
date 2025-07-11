@@ -26,14 +26,15 @@ build_app:
 # 3️⃣ Build Frontend (React)
 build_frontend:
   stage: build
+  image: node:18
   script:
     - echo "⚛️ Building React frontend"
     - cd client
     - npm install
     - npm run build
-    - cd ..
+    - echo "✅ Frontend build complete"
   only:
-    - main
+    -main
 
 # 4️⃣ Test (optional)
 test_app:
