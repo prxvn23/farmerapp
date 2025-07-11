@@ -8,7 +8,8 @@ build_app:
   image: php:8.2
   stage: build
   before_script:
-    - apt-get update && apt-get install -y git unzip libzip-dev zlib1g-dev pkg-config libssl-dev curl gnupg php-cli php-xml php-mbstring autoconf gcc g++ make
+    - apt-get update && apt-get install -y unzip git curl libzip-dev zlib1g-dev pkg-config libssl-dev autoconf gcc g++ make
+    - docker-php-ext-install zip
     - curl -O https://pecl.php.net/get/mongodb-1.19.1.tgz
     - tar -xzf mongodb-1.19.1.tgz
     - cd mongodb-1.19.1 && phpize && ./configure && make && make install && cd ..
