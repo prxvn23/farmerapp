@@ -52,3 +52,15 @@ deploy_app:
     - echo "🚀 Deployment script goes here"
   only:
     - tags
+pages:
+  stage: deploy
+  script:
+    - cd client
+    - npm install
+    - npm run build
+    - mv build public
+  artifacts:
+    paths:
+      - public
+  only:
+    - main
