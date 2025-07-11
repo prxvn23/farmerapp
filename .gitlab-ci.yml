@@ -8,10 +8,10 @@ build_app:
   image: php:8.2
   stage: build
   before_script:
-    - apt-get update && apt-get install -y unzip git curl libzip-dev libssl-dev pkg-config gnupg php8.2-dev
-    - curl -O https://pecl.php.net/get/mongodb-2.0.0.tgz
-    - tar -xzf mongodb-2.0.0.tgz
-    - cd mongodb-2.0.0 && phpize && ./configure && make && make install && cd ..
+    - apt-get update && apt-get install -y git unzip libzip-dev zlib1g-dev pkg-config libssl-dev curl gnupg php-cli php-xml php-mbstring autoconf gcc g++ make
+    - curl -O https://pecl.php.net/get/mongodb-1.19.1.tgz
+    - tar -xzf mongodb-1.19.1.tgz
+    - cd mongodb-1.19.1 && phpize && ./configure && make && make install && cd ..
     - mkdir -p /usr/local/etc/php/conf.d
     - echo "extension=mongodb.so" > /usr/local/etc/php/conf.d/mongodb.ini
     - curl -sS https://getcomposer.org/installer | php
@@ -23,6 +23,7 @@ build_app:
     - echo "✅ Backend build complete"
   only:
     - main
+
 
 
 # ✅ FRONTEND BUILD (React + Node)
