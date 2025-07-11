@@ -3,33 +3,50 @@ stages:
   - test
   - deploy
 
-image: php:8.2
+image: node:18
 
+# 1️⃣ Install Node + React + PHP deps
 before_script:
-  - apt-get update && apt-get install -y unzip git curl libzip-dev zlib1g-dev pkg-config libssl-dev
-  - pecl install mongodb
-  - docker-php-ext-enable mongodb
+  - apt-get update && apt-get install -y unzip git curl php php-cli php-mbstring php-xml php-curl libzip-dev
   - curl -sS https://getcomposer.org/installer | php
   - mv composer.phar /usr/local/bin/composer
+  - npm install --prefix client
 
-build_app:
+# 2️⃣ Build Backend (PHP)
+build_backend:
   stage: build
   script:
     - echo "📦 Installing PHP dependencies"
     - cd backend
     - composer install
     - cd ..
-    - echo "✅ Build done"
+  only:
+    - main
 
+# 3️⃣ Build Frontend (React)
+build_frontend:
+  stage: build
+  script:
+    - echo "⚛️ Building React frontend"
+    - cd client
+    - npm install
+    - npm run build
+    - cd ..
+  only:
+    - main
+
+# 4️⃣ Test (optional)
 test_app:
   stage: test
   script:
-    - echo "🧪 No tests yet"
-    - echo "✅ Test stage passed"
+    - echo "✅ No tests yet"
+  only:
+    - main
 
+# 5️⃣ Deploy (optional)
 deploy_app:
   stage: deploy
   script:
-    - echo "🚀 Deployment step (optional)"
+    - echo "🚀 Deployment script goes here"
   only:
     - tags
