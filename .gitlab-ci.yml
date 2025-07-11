@@ -1,17 +1,7 @@
 stages:
   - build
-  - test
-  - deploy
 
-# Use an official PHP image with Composer installed
-image: php:8.2-cli
-
-services:
-  - name: docker:dind
-    alias: docker
-
-variables:
-  COMPOSER_CACHE_DIR: "$CI_PROJECT_DIR/.composer"
+image: php:8.2
 
 before_script:
   - apt-get update && apt-get install -y unzip git curl
@@ -21,26 +11,6 @@ before_script:
 build_app:
   stage: build
   script:
-    - echo "🏗️ Building the PHP App"
+    - echo "Installing backend dependencies"
     - cd backend
     - composer install
-    - cd ..
-    - docker compose build
-  only:
-    - main
-    - master
-
-test_app:
-  stage: test
-  script:
-    - echo "✅ No tests yet"
-  only:
-    - main
-    - master
-
-deploy_app:
-  stage: deploy
-  script:
-    - echo "🚀 Add deploy script here (FTP, SSH, etc)"
-  only:
-    - tags
