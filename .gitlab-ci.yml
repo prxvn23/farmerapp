@@ -6,7 +6,9 @@ stages:
 image: php:8.2
 
 before_script:
-  - apt-get update && apt-get install -y unzip git curl libzip-dev zlib1g-dev
+  - apt-get update && apt-get install -y unzip git curl libzip-dev zlib1g-dev pkg-config libssl-dev libcurl4-openssl-dev
+  - pecl install mongodb
+  - docker-php-ext-enable mongodb
   - curl -sS https://getcomposer.org/installer | php
   - mv composer.phar /usr/local/bin/composer
 
@@ -31,17 +33,3 @@ deploy_app:
     - echo "Deployment script (optional)"
   only:
     - tags
-
-pages:
-  stage: deploy
-  script:
-    - cd client
-    - npm install
-    - npm run build
-    - mkdir -p public
-    - cp -r build/* ../public/
-  artifacts:
-    paths:
-      - public
-  only:
-    - main
