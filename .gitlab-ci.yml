@@ -1,0 +1,48 @@
+stages:
+  - build
+  - test
+  - deploy
+
+variables:
+  COMPOSER_CACHE_DIR: "$CI_PROJECT_DIR/.composer"
+
+# Docker image with PHP, Composer, and Docker support
+image: docker:latest
+
+services:
+  - docker:dind
+
+before_script:
+  - apk add --no-cache curl git bash php php-cli php-phar php-mbstring php-xml php-openssl php-tokenizer php-json php-curl
+  - curl -sS https://getcomposer.org/installer | php
+  - mv composer.phar /usr/local/bin/composer
+
+# 📦 Build Stage
+build_app:
+  stage: build
+  script:
+    - echo "Building the PHP App"
+    - cd backend
+    - composer install
+    - cd ..
+    - docker compose build
+  only:
+    - main
+    - master
+
+# ✅ Test Stage (Optional - Add your test logic here)
+test_app:
+  stage: test
+  script:
+    - echo "No tests yet - Add PHPUnit or integration tests"
+  only:
+    - main
+    - master
+
+# 🚀 Deploy Stage (Optional)
+deploy_app:
+  stage: deploy
+  script:
+    - echo "Deploy script goes here - FTP/SSH or GitLab Pages or CI Deployment"
+  only:
+    - tags

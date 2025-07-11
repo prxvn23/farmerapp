@@ -1,0 +1,22 @@
+# .gitignore
+
+# Node
+node_modules/
+
+# PHP
+vendor/
+
+# Logs
+*.log
+
+# Env
+.env
+
+# Docker
+mongo-data/
+docker-data/
+
+# OS & Editor junk
+.DS_Store
+Thumbs.db
+*.swp
