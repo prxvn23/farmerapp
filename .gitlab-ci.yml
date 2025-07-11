@@ -34,7 +34,8 @@ build_frontend:
     - npm run build
     - echo "✅ Frontend build complete"
   only:
-    -main
+    - main
+
 
 # 4️⃣ Test (optional)
 test_app:
