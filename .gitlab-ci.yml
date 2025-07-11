@@ -26,16 +26,18 @@ build_app:
 
 # ✅ FRONTEND BUILD (React + Node)
 build_frontend:
-  image: node:18
   stage: build
+  image: node:18
   script:
     - echo "⚛️ Building React frontend"
     - cd client
     - npm install
     - npm run build
-    - echo "✅ Frontend build complete"
+    - cd ..
+    - mv client/build public  # 🔥 This is important
   only:
     - main
+
 
 # ✅ TEST STAGE (optional)
 test_app:
@@ -55,12 +57,10 @@ deploy_app:
 pages:
   stage: deploy
   script:
-    - cd client
-    - npm install
-    - npm run build
-    - mv build public
+    - echo "Deploying to GitLab Pages"
   artifacts:
     paths:
-      - public
+      - public   # 👈 The directory with your built site
   only:
     - main
+
