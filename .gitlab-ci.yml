@@ -34,7 +34,8 @@ build_frontend:
     - npm install
     - npm run build
     - cd ..
-    - mv client/build public  # 🔥 This is important
+    - rm -rf public             # 💥 Remove if exists
+    - mv client/build public    # ✅ Move to public/
   only:
     - main
 
