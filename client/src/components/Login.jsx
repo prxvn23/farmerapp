@@ -1,3 +1,4 @@
+// client/src/login.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
@@ -8,12 +9,13 @@ function Login() {
   const [csrfToken, setCsrfToken] = useState("");
   const navigate = useNavigate();
 
+  // 🔗 Centralized API base (using HTTPS to avoid mixed-content errors)
+  const API_BASE = "https://pravinraj023-project.onrender.com/api";
+
   // ✅ Fetch CSRF Token when component mounts
   useEffect(() => {
     axios
-      .get("http://pravinraj023-project.onrender.com/api/csrf-token.php", {
-        withCredentials: true, // if backend uses cookies
-      })
+      .get(`${API_BASE}/csrf-token.php`, { withCredentials: true })
       .then((res) => setCsrfToken(res.data.token))
       .catch((err) => console.error("❌ CSRF fetch error:", err));
   }, []);
@@ -23,16 +25,10 @@ function Login() {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://pravinraj023-project.onrender.com/api/login.php",
+        `${API_BASE}/login.php`,
+        { email, password, csrf_token: csrfToken },
         {
-          email,
-          password,
-          csrf_token: csrfToken, // 🔒 attach CSRF token
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           withCredentials: true,
         }
       );
@@ -44,7 +40,7 @@ function Login() {
         localStorage.setItem("email", response.data.email);
         navigate("/dashboard");
       } else {
-        alert("❌ Login failed: " + response.data.message);
+        alert("❌ " + response.data.message);
       }
     } catch (err) {
       console.error("❌ Backend Error:", err.response?.data || err.message);
@@ -76,20 +72,18 @@ function Login() {
             required
             className="w-full p-2 mb-3 border border-gray-300 rounded"
           />
-
-          {/* Hidden CSRF field (not really needed but good for debugging) */}
+          {/* Hidden CSRF field for debugging */}
           <input type="hidden" value={csrfToken} readOnly />
-
           <button
             type="submit"
             className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
-            disabled={!csrfToken} // ⛔ Prevent login before token loads
+            disabled={!csrfToken} // ⛔ prevent login before token loads
           >
             {csrfToken ? "Login" : "Loading..."}
           </button>
         </form>
         <p className="mt-4 text-sm text-center">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link to="/register" className="text-blue-600 underline">
             Register
           </Link>
