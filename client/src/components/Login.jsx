@@ -10,7 +10,7 @@ function Login() {
   const navigate = useNavigate();
 
   // 🔗 Centralized API base (using HTTPS to avoid mixed-content errors)
-  axios.get("https://pravinraj023-project.onrender.com/api/csrf-token.php", {
+  axios.get("https://pravinraj023-project.onrender.com/backend/api/csrf-token.php", {
   withCredentials: true,
 })
 
