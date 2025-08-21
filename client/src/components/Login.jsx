@@ -10,15 +10,18 @@ function Login() {
   const navigate = useNavigate();
 
   // 🔗 Centralized API base (using HTTPS to avoid mixed-content errors)
-  const API_BASE = "https://pravinraj023-project.onrender.com";
+ const API_BASE = "https://pravinraj023-project.onrender.com";
 
-  // ✅ Fetch CSRF Token when component mounts
-  useEffect(() => {
-    axios
-      .get(`${API_BASE}/csrf-token.php`, { withCredentials: true })
-      .then((res) => setCsrfToken(res.data.token))
-      .catch((err) => console.error("❌ CSRF fetch error:", err));
-  }, []);
+useEffect(() => {
+  fetch(`${API_BASE}/api/csrf-token.php`, { credentials: "include" })
+    .then(res => res.json())
+    .then(data => {
+      console.log("CSRF Token:", data.token);
+      setCsrfToken(data.token);
+    })
+    .catch(err => console.error("❌ CSRF fetch error:", err));
+}, []);
+
 
   // ✅ Handle Login
   const handleLogin = async (e) => {
