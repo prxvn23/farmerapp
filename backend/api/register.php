@@ -1,30 +1,31 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: Content-Type");
+// 🔹 Allow only your frontend domain
+header("Access-Control-Allow-Origin: https://pravinraj023-group.gitlab.io");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
+header("Content-Type: application/json; charset=UTF-8");
 
+// 🔹 Handle preflight OPTIONS request
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
 }
-
-// ✅ Regular CORS headers for actual requests
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Access-Control-Allow-Methods: POST");
-header("Content-Type: application/json");
 
 // ✅ Include required files
 require_once '../config/db.php';
 require_once '../classes/User.php';
 require_once '../utils/csrf.php'; // ✅ include CSRF utility
 
-// ✅ Get input data
+// ✅ Get input data (JSON)
 $data = json_decode(file_get_contents("php://input"));
 
 // ✅ Validate CSRF token
+session_start();
 if (!isset($data->csrf_token) || $data->csrf_token !== $_SESSION['csrf_token']) {
-    echo json_encode(["success" => false, "message" => "❌ Invalid CSRF token"]);
+    echo json_encode([
+        "success" => false,
+        "message" => "❌ Invalid CSRF token"
+    ]);
     exit;
 }
 
@@ -36,7 +37,10 @@ if (
     empty($data->password) || 
     empty($data->role)
 ) {
-    echo json_encode(["success" => false, "message" => "❌ Missing required fields"]);
+    echo json_encode([
+        "success" => false,
+        "message" => "❌ Missing required fields"
+    ]);
     exit;
 }
 
@@ -46,14 +50,20 @@ $conn = $db->connect();
 
 // ✅ Set user properties
 $user = new User($conn);
-$user->name = $data->name;
-$user->email = $data->email;
-$user->password = $data->password;
-$user->role = $data->role;
+$user->name = htmlspecialchars(strip_tags($data->name));
+$user->email = htmlspecialchars(strip_tags($data->email));
+$user->password = password_hash($data->password, PASSWORD_BCRYPT); // ✅ hash password
+$user->role = htmlspecialchars(strip_tags($data->role));
 
 // ✅ Register user
 if ($user->register()) {
-    echo json_encode(["success" => true, "message" => "✅ Registration successful"]);
+    echo json_encode([
+        "success" => true,
+        "message" => "✅ Registration successful"
+    ]);
 } else {
-    echo json_encode(["success" => false, "message" => "❌ Register failed (maybe email already exists)"]);
+    echo json_encode([
+        "success" => false,
+        "message" => "❌ Registration failed (maybe email already exists)"
+    ]);
 }
