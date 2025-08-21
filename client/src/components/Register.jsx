@@ -15,7 +15,7 @@ function Register() {
     const fetchCsrfToken = async () => {
       try {
         const res = await axios.get(
-          'http://pravinraj023-project.onrender.com/utils/csrf.php',
+          'https://pravinraj023-project.onrender.com/utils/csrf.php',
           { withCredentials: true } // important for session
         );
         setCsrfToken(res.data.csrf_token);
