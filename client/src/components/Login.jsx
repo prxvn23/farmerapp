@@ -10,7 +10,7 @@ function Login() {
   const navigate = useNavigate();
 
   // 🔗 Centralized API base (using HTTPS to avoid mixed-content errors)
-  const API_BASE = "https://pravinraj023-project.onrender.com/csrf-token.php";
+  const API_BASE = "https://pravinraj023-project.onrender.com/backend/api";
 
   // ✅ Fetch CSRF Token when component mounts
   useEffect(() => {
