@@ -80,7 +80,7 @@ function UserDashboard() {
     setUpi(firstUpi);
 
     try {
-      const res = await fetch('http://localhost:7000/generate_qr', {
+      const res = await fetch('http://pravinraj023-project.onrender.com/generate_qr', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ upi: firstUpi, amount: total }),
@@ -147,7 +147,7 @@ function UserDashboard() {
             {group.products.map((p) => (
               <div key={p._id} className="border rounded-lg shadow p-4">
                 <img
-                  src={`http://localhost:8000/uploads/${p.image}`}
+                  src={`http://pravinraj023-project.onrender.com/uploads/${p.image}`}
                   alt={p.name}
                   className="w-full h-48 object-cover rounded"
                 />

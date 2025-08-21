@@ -15,12 +15,19 @@ header("Content-Type: application/json");
 // ✅ Includes
 require_once '../config/db.php';
 require_once '../classes/User.php';
+require_once '../utils/csrf.php';
 
 // ✅ Decode input
 $data = json_decode(file_get_contents("php://input"));
 
-if (!$data || !isset($data->email) || !isset($data->password)) {
-    echo json_encode(["success" => false, "message" => "Missing email or password"]);
+if (!$data || !isset($data->email) || !isset($data->password) || !isset($data->csrf_token)) {
+    echo json_encode(["success" => false, "message" => "Missing fields"]);
+    exit;
+}
+
+// ✅ Validate CSRF Token
+if (!validateCsrfToken($data->csrf_token)) {
+    echo json_encode(["success" => false, "message" => "Invalid CSRF token"]);
     exit;
 }
 

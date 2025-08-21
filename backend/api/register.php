@@ -8,7 +8,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-
 // ✅ Regular CORS headers for actual requests
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type");
@@ -18,10 +17,18 @@ header("Content-Type: application/json");
 // ✅ Include required files
 require_once '../config/db.php';
 require_once '../classes/User.php';
+require_once '../utils/csrf.php'; // ✅ include CSRF utility
 
 // ✅ Get input data
 $data = json_decode(file_get_contents("php://input"));
 
+// ✅ Validate CSRF token
+if (!isset($data->csrf_token) || $data->csrf_token !== $_SESSION['csrf_token']) {
+    echo json_encode(["success" => false, "message" => "❌ Invalid CSRF token"]);
+    exit;
+}
+
+// ✅ Validate required fields
 if (
     !$data || 
     empty($data->name) || 

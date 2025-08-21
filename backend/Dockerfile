@@ -1,20 +1,23 @@
-# Use official PHP image with Apache
-FROM php:8.2-apache
+FROM php:8.2-cli
 
-# Enable Apache mod_rewrite
-RUN a2enmod rewrite
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git unzip libpng-dev libjpeg-dev libfreetype6-dev libssl-dev pkg-config libcurl4-openssl-dev \
+    && docker-php-ext-install pdo pdo_mysql \
+    # Install and enable MongoDB extension
+    && pecl install mongodb \
+    && docker-php-ext-enable mongodb \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install required PHP extensions
-RUN docker-php-ext-install pdo pdo_mysql mysqli
+# Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copy project files to container
-COPY . /var/www/html/
+WORKDIR /var/www/html
 
-# Set working directory
-WORKDIR /var/www/html/
+# Copy project files
+COPY . .
 
-# Give permissions
-RUN chown -R www-data:www-data /var/www/html
+# Install PHP dependencies (ignore platform req to avoid ext-mongodb confusion)
+RUN composer install --no-dev --prefer-dist --optimize-autoloader --ignore-platform-req=ext-mongodb
 
-# Expose Apache port
-EXPOSE 80
+CMD [ "php", "-S", "0.0.0.0:8000", "-t", "public" ]

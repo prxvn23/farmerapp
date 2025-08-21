@@ -1,0 +1,9 @@
+{
+  "name": "farmer-app-grunt",
+  "private": true,
+  "devDependencies": {
+    "grunt": "^1.6.1",
+    "grunt-contrib-uglify": "^5.2.2",
+    "grunt-contrib-cssmin": "^4.0.0"
+  }
+}

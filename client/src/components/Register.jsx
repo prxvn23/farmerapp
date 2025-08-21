@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -7,27 +7,54 @@ function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('');
+  const [csrfToken, setCsrfToken] = useState('');
   const navigate = useNavigate();
 
+  // ✅ Fetch CSRF token when component loads
+  useEffect(() => {
+    const fetchCsrfToken = async () => {
+      try {
+        const res = await axios.get(
+          'http://pravinraj023-project.onrender.com/utils/csrf.php',
+          { withCredentials: true } // important for session
+        );
+        setCsrfToken(res.data.csrf_token);
+        console.log("✅ CSRF Token Fetched:", res.data.csrf_token);
+      } catch (err) {
+        console.error("❌ Failed to fetch CSRF token:", err.message);
+      }
+    };
+    fetchCsrfToken();
+  }, []);
+
+  // ✅ Handle register
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:8000/api/register.php', {
-        name,
-        email,
-        password,
-        role,
-      });
+      await axios.post(
+        'http://pravinraj023-project.onrender.com/api/register.php',
+        {
+          name,
+          email,
+          password,
+          role,
+          csrf_token: csrfToken, // send CSRF
+        },
+        { withCredentials: true } // important!
+      );
       alert('✅ Registration successful! Please login.');
       navigate('/');
     } catch (err) {
       console.error('❌ Backend Response:', err.response?.data || err.message);
-      alert('❌ Registration failed. Check console.');
+      alert(err.response?.data?.message || '❌ Registration failed. Check console.');
     }
   };
 
   return (
-    <div className="min-h-screen bg-cover bg-center flex items-center justify-center" style={{ backgroundImage: "url('/bg.jpg')" }}>
+    <div
+      className="min-h-screen bg-cover bg-center flex items-center justify-center"
+      style={{ backgroundImage: "url('/bg.jpg')" }}
+    >
       <div className="bg-white p-8 rounded shadow-lg w-full max-w-md">
         <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800">Register</h2>
         <form onSubmit={handleRegister} className="space-y-4">
@@ -65,9 +92,14 @@ function Register() {
             <option value="user">User</option>
             <option value="farmer">Farmer</option>
           </select>
+
+          {/* ✅ Hidden input for CSRF (for debugging) */}
+          <input type="hidden" value={csrfToken} readOnly />
+
           <button
             type="submit"
             className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
+            disabled={!csrfToken} // prevent submission until token is loaded
           >
             Register
           </button>

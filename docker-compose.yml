@@ -1,22 +1,65 @@
-version: '3.8'
+version: "3.8"
 
 services:
   php-backend:
     build:
       context: ./backend
     ports:
-      - "8000:80"
+      - "8000:8000"
+    environment:
+      MONGO_URI: mongodb://mongodb:27017
+      MONGO_DB: farmerAppDB
+      RABBITMQ_HOST: rabbitmq
     volumes:
       - ./backend:/var/www/html
+    working_dir: /var/www/html
+    # 👇 point PHP server to "public" folder
+    command: php -S 0.0.0.0:8000 -t public
     depends_on:
       - mongodb
+      - rabbitmq
+
+  client:
+    build:
+      context: ./client
+    ports:
+      - "3000:80"
+    depends_on:
+      - php-backend
 
   mongodb:
-    image: mongo
+    image: mongo:6
     ports:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+
+  worker:
+    build:
+      context: ./backend
+    command: ["php", "workers/consumer.php"]
+    depends_on:
+      - rabbitmq
+      - mongodb
+
+  cron:
+    image: php:8.2-cli-alpine
+    volumes:
+      - ./cron:/app/cron
+      - ./backend:/app/backend
+    working_dir: /app
+    entrypoint: ["/bin/sh","-c","echo '0 2 * * * php /app/cron/cleanup.php' > /etc/crontabs/root && crond -f -l 8"]
+    depends_on:
+      - mongodb
+
 volumes:
   mongo-data:
+  rabbitmq-data:

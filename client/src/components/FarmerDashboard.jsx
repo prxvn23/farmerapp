@@ -34,7 +34,7 @@ const FarmerDashboard = () => {
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get(`http://localhost:8000/api/products/getProductsByFarmer.php?farmerId=${farmerId}`);
+      const res = await axios.get(`http://pravinraj023-project.onrender.com/api/products/getProductsByFarmer.php?farmerId=${farmerId}`);
 
       setProducts(res.data);
     } catch (err) {
@@ -59,7 +59,7 @@ if (storedEmail) setEmail(storedEmail);
       });
       formData.append('farmerId', farmerId);
 
-      await axios.post('http://localhost:8000/api/products/addProduct.php', formData, {
+      await axios.post('http://pravinraj023-project.onrender.com/api/products/addProduct.php', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
@@ -72,7 +72,7 @@ if (storedEmail) setEmail(storedEmail);
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:8000/api/products/deleteProduct.php/${id}`);
+      await axios.delete(`http://pravinraj023-project.onrender.com/api/products/deleteProduct.php/${id}`);
       fetchProducts();
     } catch (err) {
       console.error('Delete error:', err);
@@ -86,7 +86,7 @@ if (storedEmail) setEmail(storedEmail);
 
   const handleUpdate = async (id) => {
     try {
-      await axios.put(`http://localhost:8000/api/products/updateProduct.php/${id}`, { price: newPrice });
+      await axios.put(`http://pravinraj023-project.onrender.com/api/products/updateProduct.php/${id}`, { price: newPrice });
       setEditProductId(null);
       setNewPrice('');
       fetchProducts();
@@ -210,7 +210,7 @@ return (
               <p>Farmer: {p.farmerName} | Contact: {p.contact}</p>
               <p>UPI ID: {p.upi}</p>
               {p.image && (
-                <img src={`http://localhost:8000/uploads/${p.image}`} alt={p.name} className="w-24 mt-2 rounded" />
+                <img src={`http://pravinraj023-project.onrender.com/uploads/${p.image}`} alt={p.name} className="w-24 mt-2 rounded" />
               )}
               <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                 onClick={() => handleDelete(p._id)}
