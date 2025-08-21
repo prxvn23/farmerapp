@@ -10,7 +10,10 @@ function Login() {
   const navigate = useNavigate();
 
   // 🔗 Centralized API base (using HTTPS to avoid mixed-content errors)
-  const API_BASE = "https://pravinraj023-project.onrender.com/utils/csrf.php";
+  axios.get("https://pravinraj023-project.onrender.com/api/csrf-token.php", {
+  withCredentials: true,
+})
+
 
   // ✅ Fetch CSRF Token when component mounts
   useEffect(() => {
