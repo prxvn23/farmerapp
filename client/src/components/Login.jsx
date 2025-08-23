@@ -7,31 +7,44 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [csrfToken, setCsrfToken] = useState("");
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // 🔗 Centralized API base (using HTTPS to avoid mixed-content errors)
- const API_BASE = "https://pravinraj023-project.onrender.com";
+  // 🔗 Centralized API base
+  const API_BASE = "https://pravinraj023-project.onrender.com";
 
-useEffect(() => {
-  fetch(`${API_BASE}/backend/api/csrf-token.php`, { credentials: "include" })
-    .then(res => res.json())
-    .then(data => {
-      console.log("CSRF Token:", data.token);
-      setCsrfToken(data.token);
-    })
-    .catch(err => console.error("❌ CSRF fetch error:", err));
-}, []);
-
+  // 🔑 Fetch CSRF token when component mounts
+  useEffect(() => {
+    fetch(`${API_BASE}/api/csrf-token.php`, { credentials: "include" })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("✅ CSRF Token:", data.token);
+        setCsrfToken(data.token);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("❌ CSRF fetch error:", err);
+        setLoading(false);
+      });
+  }, []);
 
   // ✅ Handle Login
   const handleLogin = async (e) => {
     e.preventDefault();
+    if (!csrfToken) {
+      alert("❌ CSRF token not loaded. Please refresh and try again.");
+      return;
+    }
+
     try {
       const response = await axios.post(
         `${API_BASE}/login.php`,
-        { email, password, csrf_token: csrfToken },
+        { email, password },
         {
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-Token": csrfToken, // ✅ safer to send via header
+          },
           withCredentials: true,
         }
       );
@@ -58,33 +71,41 @@ useEffect(() => {
     >
       <div className="bg-white p-8 rounded shadow-md w-full max-w-sm">
         <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
-        <form onSubmit={handleLogin}>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full p-2 mb-3 border border-gray-300 rounded"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="w-full p-2 mb-3 border border-gray-300 rounded"
-          />
-          {/* Hidden CSRF field for debugging */}
-          <input type="hidden" value={csrfToken} readOnly />
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
-            disabled={!csrfToken} // ⛔ prevent login before token loads
-          >
-            {csrfToken ? "Login" : "Loading..."}
-          </button>
-        </form>
+
+        {loading ? (
+          <p className="text-center text-gray-500">Loading CSRF token...</p>
+        ) : (
+          <form onSubmit={handleLogin}>
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full p-2 mb-3 border border-gray-300 rounded"
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full p-2 mb-3 border border-gray-300 rounded"
+            />
+
+            {/* Hidden field only for debugging */}
+            <input type="hidden" value={csrfToken} readOnly />
+
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
+              disabled={!csrfToken}
+            >
+              {csrfToken ? "Login" : "Loading..."}
+            </button>
+          </form>
+        )}
+
         <p className="mt-4 text-sm text-center">
           Don&apos;t have an account?{" "}
           <Link to="/register" className="text-blue-600 underline">
