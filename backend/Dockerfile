@@ -1,4 +1,5 @@
-FROM php:8.2-cli
+# Use official PHP image with Apache
+FROM php:8.2-apache
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -12,12 +13,20 @@ RUN apt-get update && apt-get install -y \
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
+# Set working directory
 WORKDIR /var/www/html
 
-# Copy project files
-COPY . .
+# Copy all project files to Apache web root
+COPY . /var/www/html/
 
 # Install PHP dependencies (ignore platform req to avoid ext-mongodb confusion)
-RUN composer install --no-dev --prefer-dist --optimize-autoloader --ignore-platform-req=ext-mongodb
+RUN composer install --no-dev --prefer-dist --optimize-autoloader --ignore-platform-req=ext-mongodb || true
 
-CMD [ "php", "-S", "0.0.0.0:8000", "-t", "public" ]
+# Enable Apache mod_rewrite (for clean URLs, APIs, etc.)
+RUN a2enmod rewrite
+
+# Expose port 80 for Render
+EXPOSE 80
+
+# Start Apache in foreground (Render needs this)
+CMD ["apache2-foreground"]
