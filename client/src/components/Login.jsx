@@ -13,7 +13,7 @@ function Login() {
  const API_BASE = "https://pravinraj023-project.onrender.com";
 
 useEffect(() => {
-  fetch(`${API_BASE}/csrf-token.php`, { credentials: "include" })
+  fetch(`${API_BASE}backend/api/csrf-token.php`, { credentials: "include" })
     .then(res => res.json())
     .then(data => {
       console.log("CSRF Token:", data.token);
