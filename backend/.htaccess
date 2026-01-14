@@ -1,0 +1,10 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Block access to sensitive directories
+    RewriteRule ^(classes|config|vendor|workers|\.env|composer\.*) - [F,L]
+
+    # Allow access to api/ and public/
+    # (Default behavior matches files)
+</IfModule>

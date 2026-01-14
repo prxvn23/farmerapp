@@ -1,7 +1,8 @@
 {
     "require": {
         "vlucas/phpdotenv": "^5.6",
-        "mongodb/mongodb": "1.19",
+        "mongodb/mongodb": "^1.20",
+        "php-amqplib/php-amqplib": "^3.0",
         "endroid/qr-code": "^6.0"
     }
 }

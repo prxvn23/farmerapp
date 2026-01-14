@@ -4,7 +4,7 @@ FROM php:8.2-apache
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     git unzip libpng-dev libjpeg-dev libfreetype6-dev libssl-dev pkg-config libcurl4-openssl-dev \
-    && docker-php-ext-install pdo pdo_mysql \
+    && docker-php-ext-install pdo pdo_mysql bcmath sockets \
     # Install and enable MongoDB extension
     && pecl install mongodb \
     && docker-php-ext-enable mongodb \

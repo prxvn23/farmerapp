@@ -1,43 +1,51 @@
 services:
-  php-backend:
-    build:
-      context: ./backend
+  nginx:
+    image: nginx:alpine
     ports:
-      - "8000:80"
-    environment:
-      MONGO_URI: mongodb://mongodb:27017
-      MONGO_DB: farmerAppDB
-      RABBITMQ_HOST: rabbitmq
+      - "80:80"
+    links:
+      - client
+      - php-backend
     volumes:
-      - ./backend:/var/www/html
-    working_dir: /var/www/html
-    # ✅ Use default Apache command (from Dockerfile)
+      - ./nginx/conf.d:/etc/nginx/conf.d
     depends_on:
-      - mongodb
-      - rabbitmq
+      - client
+      - php-backend
+    restart: always
 
   client:
     build:
       context: ./client
-    ports:
-      - "3000:80"
+    restart: always
+    # No ports exposed, accessed via nginx
+
+  php-backend:
+    build:
+      context: ./backend
+    env_file:
+      - .env
+    environment:
+      MONGO_URI: mongodb://mongodb:27017
+      MONGO_DB: farmerDB
+      RABBITMQ_HOST: rabbitmq
+    volumes:
+      - ./backend:/var/www/html
+    restart: always
     depends_on:
-      - php-backend
+      - mongodb
+      - rabbitmq
 
   mongodb:
     image: mongo:4.4
-    ports:
-      - "27017:27017"
     volumes:
       - mongo-data:/data/db
+    restart: always
 
   rabbitmq:
     image: rabbitmq:3-management
-    ports:
-      - "5672:5672"
-      - "15672:15672"
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
+    restart: always
 
   worker:
     build:
@@ -46,6 +54,7 @@ services:
     depends_on:
       - rabbitmq
       - mongodb
+    restart: always
 
   cron:
     image: php:8.2-cli-alpine
@@ -56,6 +65,7 @@ services:
     entrypoint: [ "/bin/sh", "-c", "echo '0 2 * * * php /app/cron/cleanup.php' > /etc/crontabs/root && crond -f -l 8" ]
     depends_on:
       - mongodb
+    restart: always
 
 volumes:
   mongo-data:

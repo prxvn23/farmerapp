@@ -8,9 +8,13 @@ $db = new DB();
 $conn = $db->connect();
 
 // Example consumer: log events to a collection 'eventLogs'
-$queue->consume('events', function($event) use ($conn) {
+// Consume from 'notifications' queue
+$queue->consume('notifications', function($data) use ($conn) {
+    echo " [x] Received event: " . json_encode($data) . "\n";
+    
+    // Log to MongoDB
     $conn->selectCollection('eventLogs')->insertOne([
-        'event' => $event,
-        'receivedAt' => new MongoDB\BSON\UTCDateTime(),
+        'data' => $data,
+        'processedAt' => new MongoDB\BSON\UTCDateTime(),
     ]);
 });

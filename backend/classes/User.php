@@ -1,9 +1,10 @@
 <?php
-use MongoDB\BSON\ObjectId;
+use MongoDB\BSON\UTCDateTime;
 
 class User {
-    public $conn;
-    public $id;
+    private $conn;
+    private $collection;
+
     public $name;
     public $email;
     public $password;
@@ -11,44 +12,52 @@ class User {
 
     public function __construct($db) {
         $this->conn = $db;
+        $this->collection = $this->conn->selectCollection("User"); // 👈 collection name
     }
 
-    // ✅ Register a new user
     public function register() {
-        $collection = $this->conn->selectCollection("users");
+        try {
+            // ✅ check if email already exists
+            $existingUser = $this->collection->findOne(["email" => $this->email]);
+            if ($existingUser) {
+                return false; // prevent duplicates
+            }
 
-        // Check if email already exists
-        $existing = $collection->findOne(["email" => $this->email]);
-        if ($existing) {
-            return false; // Email already exists
+            // ✅ hash password
+            $hashedPassword = password_hash($this->password, PASSWORD_BCRYPT);
+
+            // ✅ insert document
+            $result = $this->collection->insertOne([
+                "name" => $this->name,
+                "email" => $this->email,
+                "password" => $hashedPassword,
+                "role" => $this->role,
+                "created_at" => new UTCDateTime()
+            ]);
+
+            return $result->getInsertedCount() > 0;
+
+        } catch (Exception $e) {
+            error_log("❌ User Registration Error: " . $e->getMessage());
+            return false;
         }
-
-        // Hash password
-        $hashedPassword = password_hash($this->password, PASSWORD_DEFAULT);
-
-        // Insert into database
-        $insertResult = $collection->insertOne([
-            "name" => $this->name,
-            "email" => $this->email,
-            "password" => $hashedPassword,
-            "role" => $this->role
-        ]);
-
-        return $insertResult->getInsertedCount() > 0;
     }
 
-    // ✅ Login existing user
-   public function login() {
-    $collection = $this->conn->selectCollection("users");
-    $userData = $collection->findOne(["email" => $this->email]);
 
-    if ($userData && password_verify($this->password, $userData['password'])) {
-        $this->id = (string) $userData['_id'];
-        $this->role = $userData['role'] ?? '';
-        $this->name = $userData['name'] ?? '';
-        return true;
+    public function login() {
+        try {
+            $user = $this->collection->findOne(["email" => $this->email]);
+            
+            if ($user && password_verify($this->password, $user['password'])) {
+                $this->id = (string)$user['_id'];
+                $this->name = $user['name'];
+                $this->role = $user['role'];
+                return true;
+            }
+            return false;
+        } catch (Exception $e) {
+            error_log("❌ Login Error: " . $e->getMessage());
+            return false;
+        }
     }
-    return false;
-}
-
 }

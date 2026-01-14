@@ -1,17 +1,25 @@
 <?php
-require __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use MongoDB\Client;
 
 class DB {
-    private $uri;
-    private $dbName;
-
-    public function __construct() {
-        $this->uri = getenv('MONGO_URI') ?: 'mongodb://mongodb:27017';
-        $this->dbName = getenv('MONGO_DB') ?: 'farmerAppDB';
-    }
+    private $conn;
 
     public function connect() {
-        $client = new MongoDB\Client($this->uri);
-        return $client->selectDatabase($this->dbName);
+        // Load .env
+        $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
+        $dotenv->load();
+
+        $uri = getenv('MONGO_URI') ?: "mongodb://localhost:27017";
+        $dbName = getenv('MONGO_DB') ?: "farmerDB";
+
+        try {
+            $client = new Client($uri);
+            $this->conn = $client->selectDatabase($dbName);
+            return $this->conn;
+        } catch (Exception $e) {
+            die("❌ MongoDB Connection Error: " . $e->getMessage());
+        }
     }
 }

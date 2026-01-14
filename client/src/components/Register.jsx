@@ -1,23 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function Register() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [role, setRole] = useState('');
-  const [csrfToken, setCsrfToken] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [role, setRole] = useState("");
+  const [csrfToken, setCsrfToken] = useState("");
   const navigate = useNavigate();
 
-  // ✅ Fetch CSRF token when component loads
+  // ✅ Detect environment
+  const API_BASE =
+    window.location.hostname === "localhost"
+      ? "http://localhost:5000"
+      : "https://pravinraj023-project.onrender.com";
+
+  // ✅ Fetch CSRF token
   useEffect(() => {
     const fetchCsrfToken = async () => {
       try {
-        const res = await axios.get(
-          'https://pravinraj023-project.onrender.com/utils/csrf.php',
-          { withCredentials: true } // important for session
-        );
+        const res = await axios.get(`${API_BASE}/utils/csrf.php`, {
+          withCredentials: true,
+        });
         setCsrfToken(res.data.csrf_token);
         console.log("✅ CSRF Token Fetched:", res.data.csrf_token);
       } catch (err) {
@@ -25,28 +30,30 @@ function Register() {
       }
     };
     fetchCsrfToken();
-  }, []);
+  }, [API_BASE]);
 
   // ✅ Handle register
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
       await axios.post(
-        'http://pravinraj023-project.onrender.com/api/register.php',
+        `${API_BASE}/api/register.php`,
         {
           name,
           email,
           password,
           role,
-          csrf_token: csrfToken, // send CSRF
+          csrf_token: csrfToken,
         },
-        { withCredentials: true } // important!
+        { withCredentials: true }
       );
-      alert('✅ Registration successful! Please login.');
-      navigate('/');
+      alert("✅ Registration successful! Please login.");
+      navigate("/");
     } catch (err) {
-      console.error('❌ Backend Response:', err.response?.data || err.message);
-      alert(err.response?.data?.message || '❌ Registration failed. Check console.');
+      console.error("❌ Backend Response:", err.response?.data || err.message);
+      alert(
+        err.response?.data?.message || "❌ Registration failed. Check console."
+      );
     }
   };
 
@@ -56,7 +63,9 @@ function Register() {
       style={{ backgroundImage: "url('/bg.jpg')" }}
     >
       <div className="bg-white p-8 rounded shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800">Register</h2>
+        <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800">
+          Register
+        </h2>
         <form onSubmit={handleRegister} className="space-y-4">
           <input
             type="text"
@@ -93,13 +102,12 @@ function Register() {
             <option value="farmer">Farmer</option>
           </select>
 
-          {/* ✅ Hidden input for CSRF (for debugging) */}
           <input type="hidden" value={csrfToken} readOnly />
 
           <button
             type="submit"
             className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
-            disabled={!csrfToken} // prevent submission until token is loaded
+            disabled={!csrfToken}
           >
             Register
           </button>

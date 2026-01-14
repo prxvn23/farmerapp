@@ -69,4 +69,35 @@ class Product {
         $result = $collection->deleteOne(["_id" => new MongoDB\BSON\ObjectId($id)]);
         return $result->getDeletedCount() > 0;
     }
+    // ✅ Get Single Product by ID
+    public function findById($id) {
+        try {
+            $collection = $this->conn->selectCollection("products");
+            $doc = $collection->findOne(["_id" => new MongoDB\BSON\ObjectId($id)]);
+            if ($doc) {
+                $doc['_id'] = (string)$doc['_id'];
+                return $doc;
+            }
+            return null;
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
+    // ✅ Update Product (Generic)
+    public function update($id, $data) {
+        $collection = $this->conn->selectCollection("products");
+        $updateFields = [];
+        
+        foreach ($data as $key => $value) {
+            // Add validation here if needed
+            $updateFields[$key] = $value;
+        }
+
+        $result = $collection->updateOne(
+            ["_id" => new MongoDB\BSON\ObjectId($id)],
+            ['$set' => $updateFields]
+        );
+        return $result->getModifiedCount() > 0;
+    }
 }

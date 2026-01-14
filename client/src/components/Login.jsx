@@ -1,4 +1,3 @@
-// client/src/login.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
@@ -8,24 +7,38 @@ function Login() {
   const [password, setPassword] = useState("");
   const [csrfToken, setCsrfToken] = useState("");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // 🔗 Centralized API base
-  const API_BASE = "https://pravinraj023-project.onrender.com";
+  // 🔗 Centralized API base (Relative path for Prod/Proxy)
+  const API_BASE = "";
 
   // 🔑 Fetch CSRF token when component mounts
   useEffect(() => {
-    fetch(`${API_BASE}/api/csrf-token.php`, { credentials: "include" })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("✅ CSRF Token:", data.token);
-        setCsrfToken(data.token);
-        setLoading(false);
-      })
-      .catch((err) => {
+    const fetchToken = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/utils/csrf.php`, {
+          credentials: "include",
+        });
+
+        const text = await res.text();
+        try {
+          const data = JSON.parse(text);
+          console.log("✅ CSRF Token (Login):", data.csrf_token);
+          setCsrfToken(data.csrf_token);
+        } catch (parseErr) {
+          console.error("❌ Invalid JSON from server:", text);
+          setError("Server returned invalid CSRF response.");
+        }
+      } catch (err) {
         console.error("❌ CSRF fetch error:", err);
+        setError("Failed to fetch CSRF token.");
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchToken();
   }, []);
 
   // ✅ Handle Login
@@ -38,23 +51,34 @@ function Login() {
 
     try {
       const response = await axios.post(
-        `${API_BASE}/login.php`,
+        `${API_BASE}/api/login.php`,
         { email, password },
         {
           headers: {
             "Content-Type": "application/json",
-            "X-CSRF-Token": csrfToken, // ✅ safer to send via header
+            "X-CSRF-Token": csrfToken,
           },
           withCredentials: true,
         }
       );
 
       if (response.data.success) {
-        alert("✅ Login successful");
+        // ✅ Save user info correctly
         localStorage.setItem("userId", response.data.userId);
         localStorage.setItem("role", response.data.role);
+        localStorage.setItem("name", response.data.name);
         localStorage.setItem("email", response.data.email);
-        navigate("/dashboard");
+
+        // ✅ Navigate directly based on role
+        if (response.data.role === "farmer") {
+          navigate("/farmer");
+        } else if (response.data.role === "user") {
+          navigate("/user");
+        } else {
+          alert("Unknown role! Contact admin.");
+        }
+
+
       } else {
         alert("❌ " + response.data.message);
       }
@@ -74,6 +98,8 @@ function Login() {
 
         {loading ? (
           <p className="text-center text-gray-500">Loading CSRF token...</p>
+        ) : error ? (
+          <p className="text-center text-red-600">{error}</p>
         ) : (
           <form onSubmit={handleLogin}>
             <input
@@ -93,7 +119,7 @@ function Login() {
               className="w-full p-2 mb-3 border border-gray-300 rounded"
             />
 
-            {/* Hidden field only for debugging */}
+            {/* Debug hidden field */}
             <input type="hidden" value={csrfToken} readOnly />
 
             <button
