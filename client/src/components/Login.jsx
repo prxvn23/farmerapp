@@ -13,7 +13,7 @@ function Login() {
   // 🔗 Centralized API base (Relative path for Prod/Proxy)
   const API_BASE = window.location.hostname === "localhost"
     ? "http://localhost:8000"
-    : "https://pravinraj023-project.onrender.com";
+    : "https://farmer.selfmade.lol";
 
   // 🔑 Fetch CSRF token when component mounts
   useEffect(() => {

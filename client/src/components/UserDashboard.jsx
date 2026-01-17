@@ -18,7 +18,7 @@ function UserDashboard() {
   // ✅ Centralize API base
   const API_BASE = window.location.hostname === "localhost"
     ? "http://localhost:8000"
-    : "https://pravinraj023-project.onrender.com";
+    : "https://farmer.selfmade.lol";
 
   useEffect(() => {
     const storedEmail = localStorage.getItem('email');

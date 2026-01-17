@@ -14,7 +14,7 @@ function Register() {
   const API_BASE =
     window.location.hostname === "localhost"
       ? "http://localhost:8000"
-      : "https://pravinraj023-project.onrender.com";
+      : "https://farmer.selfmade.lol";
 
   // ✅ Fetch CSRF token
   useEffect(() => {

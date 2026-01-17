@@ -4,7 +4,8 @@ function handleCors() {
     $allowed_origins = [
         "http://localhost:3000",
         "https://pravinraj023-project-74e2a1.gitlab.io",
-        "https://pravinraj023-group.gitlab.io"
+        "https://pravinraj023-group.gitlab.io",
+        "https://farmer.selfmade.lol"
     ];
 
     // Add Env Var Origin (For Render)
