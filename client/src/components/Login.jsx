@@ -11,7 +11,9 @@ function Login() {
   const navigate = useNavigate();
 
   // 🔗 Centralized API base (Relative path for Prod/Proxy)
-  const API_BASE = "";
+  const API_BASE = window.location.hostname === "localhost"
+    ? "http://localhost:8000"
+    : "https://pravinraj023-project.onrender.com";
 
   // 🔑 Fetch CSRF token when component mounts
   useEffect(() => {
@@ -63,28 +65,36 @@ function Login() {
       );
 
       if (response.data.success) {
+        const userData = response.data.user; // ✅ Extract nested user object
+
         // ✅ Save user info correctly
-        localStorage.setItem("userId", response.data.userId);
-        localStorage.setItem("role", response.data.role);
-        localStorage.setItem("name", response.data.name);
-        localStorage.setItem("email", response.data.email);
+        localStorage.setItem("userId", userData.id);
+        localStorage.setItem("role", userData.role);
+        localStorage.setItem("name", userData.name);
+        localStorage.setItem("email", userData.email);
 
         // ✅ Navigate directly based on role
-        if (response.data.role === "farmer") {
+        if (userData.role === "farmer") {
           navigate("/farmer");
-        } else if (response.data.role === "user") {
+        } else if (userData.role === "user") {
           navigate("/user");
         } else {
-          alert("Unknown role! Contact admin.");
+          alert(`Unknown role: ${userData.role}! Contact admin.`);
         }
 
 
       } else {
-        alert("❌ " + response.data.message);
+        console.log("❌ Login Failed Response:", response.data);
+        alert("❌ Login Failed (Server Response): " + JSON.stringify(response.data));
       }
     } catch (err) {
       console.error("❌ Backend Error:", err.response?.data || err.message);
-      alert("❌ Login failed. Check console.");
+      // Show cleaner error, or raw details if message missing
+      const msg = err.response?.data?.message
+        ? "❌ " + err.response.data.message
+        : "❌ Login Failed: " + JSON.stringify(err.response?.data || err.message);
+
+      alert(msg);
     }
   };
 

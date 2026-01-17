@@ -1,8 +1,6 @@
-<?php
-// ✅ CORS
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: *");
-header("Access-Control-Allow-Methods: GET");
+// ✅ Centralized CORS
+require_once __DIR__ . '/../../utils/cors.php';
+handleCors();
 header("Content-Type: application/json");
 
 // ✅ Includes

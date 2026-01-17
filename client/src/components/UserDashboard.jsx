@@ -15,6 +15,11 @@ function UserDashboard() {
   const [upi, setUpi] = useState('');
   const [amountToPay, setAmountToPay] = useState(0);
 
+  // ✅ Centralize API base
+  const API_BASE = window.location.hostname === "localhost"
+    ? "http://localhost:8000"
+    : "https://pravinraj023-project.onrender.com";
+
   useEffect(() => {
     const storedEmail = localStorage.getItem('email');
     if (storedEmail) {
@@ -24,7 +29,7 @@ function UserDashboard() {
 
   const fetchAllProducts = async () => {
     try {
-      const res = await axios.get('http://localhost:8000/api/products/getAllproducts.php');
+      const res = await axios.get(`${API_BASE}/api/products/getAllproducts.php`);
       setProducts(res.data);
     } catch (err) {
       console.error('Fetch error:', err);
@@ -80,11 +85,13 @@ function UserDashboard() {
     setUpi(firstUpi);
 
     try {
-      const res = await fetch('http://pravinraj023-project.onrender.com/generate_qr', {
+      const res = await fetch(`${API_BASE}/api/generate_qr.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ upi: firstUpi, amount: total }),
       });
+
+      if (!res.ok) throw new Error("Failed to generate QR");
 
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
@@ -147,7 +154,7 @@ function UserDashboard() {
             {group.products.map((p) => (
               <div key={p._id} className="border rounded-lg shadow p-4">
                 <img
-                  src={`http://pravinraj023-project.onrender.com/uploads/${p.image}`}
+                  src={`${API_BASE}/uploads/${p.image}`}
                   alt={p.name}
                   className="w-full h-48 object-cover rounded"
                 />

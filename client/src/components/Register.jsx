@@ -13,7 +13,7 @@ function Register() {
   // ✅ Detect environment
   const API_BASE =
     window.location.hostname === "localhost"
-      ? "http://localhost:5000"
+      ? "http://localhost:8000"
       : "https://pravinraj023-project.onrender.com";
 
   // ✅ Fetch CSRF token
