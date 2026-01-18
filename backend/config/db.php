@@ -22,11 +22,16 @@ class DB {
         $uri = "mongodb://{$user}:{$pass}@ac-zz2vpgm-shard-00-00.talcjux.mongodb.net:27017,ac-zz2vpgm-shard-00-01.talcjux.mongodb.net:27017,ac-zz2vpgm-shard-00-02.talcjux.mongodb.net:27017/farmerDB?ssl=true&replicaSet=atlas-zz2vpgm-shard-0&authSource=admin&retryWrites=true&w=majority";
         $dbName = getenv('MONGO_DB') ?: "farmerDB";
 
+        // Confirming URI (Masking password for logs)
+        $maskedUri = preg_replace('/(:)([^@]+)(@)/', '$1****$3', $uri);
+        error_log("🔌 Connecting to MongoDB URI: " . $maskedUri);
+
         try {
             $client = new Client($uri);
             $this->conn = $client->selectDatabase($dbName);
             return $this->conn;
         } catch (Exception $e) {
+            error_log("❌ MongoDB Connection Error: " . $e->getMessage());
             die("❌ MongoDB Connection Error: " . $e->getMessage());
         }
     }
