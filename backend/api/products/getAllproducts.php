@@ -1,3 +1,4 @@
+<?php
 // ✅ Centralized CORS
 require_once __DIR__ . '/../../utils/cors.php';
 handleCors();
