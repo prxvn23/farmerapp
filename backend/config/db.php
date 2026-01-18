@@ -14,22 +14,26 @@ class DB {
         // $uri = getenv('MONGO_URI') ?: "mongodb://localhost:27017";
         
         // DEBUG: Force Prod URI with RESOLVED HOSTS (Bypassing SRV/DNS & Special Char issues)
-        // Hosts resolved via local DNS: ac-zz2vpgm-shard-00-xx.talcjux.mongodb.net
-        // Password '@' encoded as '%40'
-        $user = "pravinjordan023";
-        $pass = "Ravipriya%40023"; // URL Encoded '@'
+        // DEBUG: Force Prod URI with RESOLVED HOSTS
+        // Using Options Array for Auth to avoid Special Character (@) encoding issues
         
-        // REMOVED replicaSet param to allow auto-discovery
-        // CHANGED ssl=true to tls=true
-        $uri = "mongodb://{$user}:{$pass}@ac-zz2vpgm-shard-00-00.talcjux.mongodb.net:27017,ac-zz2vpgm-shard-00-01.talcjux.mongodb.net:27017,ac-zz2vpgm-shard-00-02.talcjux.mongodb.net:27017/farmerDB?tls=true&authSource=admin&retryWrites=true&w=majority";
-        $dbName = getenv('MONGO_DB') ?: "farmerDB";
+        $hosts = "ac-zz2vpgm-shard-00-00.talcjux.mongodb.net:27017,ac-zz2vpgm-shard-00-01.talcjux.mongodb.net:27017,ac-zz2vpgm-shard-00-02.talcjux.mongodb.net:27017";
+        $params = "farmerDB?tls=true&authSource=admin&retryWrites=true&w=majority";
+        
+        // Pure URI without credentials
+        $uri = "mongodb://{$hosts}/{$params}";
 
-        // Confirming URI (Masking password for logs)
-        $maskedUri = preg_replace('/(:)([^@]+)(@)/', '$1****$3', $uri);
-        error_log("🔌 Connecting to MongoDB URI: " . $maskedUri);
+        // Raw Credentials in Options
+        $options = [
+            'username' => 'pravinjordan023',
+            'password' => 'Ravipriya@023', // Raw Password (No encoding needed here)
+        ];
+
+        error_log("🔌 Connecting to MongoDB (Auth via Options)...");
 
         try {
-            $client = new Client($uri);
+            // Pass options as second argument
+            $client = new Client($uri, $options);
             $this->conn = $client->selectDatabase($dbName);
             return $this->conn;
         } catch (Exception $e) {
