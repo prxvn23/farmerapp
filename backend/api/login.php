@@ -32,8 +32,12 @@ try {
     error_log("ℹ️ Login Session ID: " . session_id() . ", Session CSRF: " . ($_SESSION['csrf_token'] ?? 'NULL') . ", Received CSRF: " . ($csrfToken ?? 'NULL'));
 
     // Validate required fields
-    if (!$data || empty($data->email) || empty($data->password) || !$csrfToken) {
-        throw new Exception("❌ Missing fields (Email, Password, or CSRF Token)");
+    // Validate required fields
+    if (!$data) throw new Exception("❌ No JSON data received");
+    if (empty($data->email)) throw new Exception("❌ Missing Email");
+    if (empty($data->password)) throw new Exception("❌ Missing Password");
+    if (!$csrfToken) {
+         throw new Exception("❌ Missing CSRF Token. Headers: " . json_encode($headers));
     }
 
     // Validate CSRF

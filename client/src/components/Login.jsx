@@ -54,7 +54,7 @@ function Login() {
     try {
       const response = await axios.post(
         `${API_BASE}/api/login.php`,
-        { email, password },
+        { email, password, csrf_token: csrfToken }, // ✅ Send in Body as backup
         {
           headers: {
             "Content-Type": "application/json",
