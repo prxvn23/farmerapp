@@ -26,7 +26,8 @@ class DB {
         // Raw Credentials in Options
         $options = [
             'username' => 'pravinjordan023',
-            'password' => 'Ravipriya@023', // Raw Password (No encoding needed here)
+            'password' => 'Ravipriya@023', // Raw Password
+            'authSource' => 'admin', // Force Auth against Admin DB
         ];
 
         error_log("🔌 Connecting to MongoDB (Auth via Options)...");
