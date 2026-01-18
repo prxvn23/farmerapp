@@ -19,7 +19,9 @@ class DB {
         $user = "pravinjordan023";
         $pass = "Ravipriya%40023"; // URL Encoded '@'
         
-        $uri = "mongodb://{$user}:{$pass}@ac-zz2vpgm-shard-00-00.talcjux.mongodb.net:27017,ac-zz2vpgm-shard-00-01.talcjux.mongodb.net:27017,ac-zz2vpgm-shard-00-02.talcjux.mongodb.net:27017/farmerDB?ssl=true&replicaSet=atlas-zz2vpgm-shard-0&authSource=admin&retryWrites=true&w=majority";
+        // REMOVED replicaSet param to allow auto-discovery
+        // CHANGED ssl=true to tls=true
+        $uri = "mongodb://{$user}:{$pass}@ac-zz2vpgm-shard-00-00.talcjux.mongodb.net:27017,ac-zz2vpgm-shard-00-01.talcjux.mongodb.net:27017,ac-zz2vpgm-shard-00-02.talcjux.mongodb.net:27017/farmerDB?tls=true&authSource=admin&retryWrites=true&w=majority";
         $dbName = getenv('MONGO_DB') ?: "farmerDB";
 
         // Confirming URI (Masking password for logs)
