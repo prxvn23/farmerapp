@@ -3,7 +3,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\QrCode;
-use Endroid\QrCode\Writer\PngWriter;
+use Endroid\QrCode\Writer\SvgWriter; // ✅ Switch to SVG (No GD required)
 use Endroid\QrCode\Encoding\Encoding;
 use Endroid\QrCode\ErrorCorrectionLevel;
 
@@ -30,7 +30,7 @@ $upiString = "upi://pay?pa={$upi}&pn={$name}&am={$amount}&cu=INR";
 
 try {
     $builder = new Builder(
-        writer: new PngWriter(),
+        writer: new SvgWriter(), // ✅ Use SVG Writer
         writerOptions: [],
         validateResult: false,
         data: $upiString,
@@ -43,7 +43,7 @@ try {
     
     $result = $builder->build();
 
-    header('Content-Type: ' . $result->getMimeType());
+    header('Content-Type: image/svg+xml'); // ✅ Correct MIME for SVG
     echo $result->getString();
 
 } catch (Throwable $e) {
