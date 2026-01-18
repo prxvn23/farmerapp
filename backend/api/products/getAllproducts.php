@@ -13,6 +13,10 @@ $conn = $db->connect();
 
 // ✅ Fetch products
 $product = new Product($conn);
-$products = $product->getAll(); // 👈 Add this method below
+$products = $product->getAll(); 
 
-echo json_encode($products);
+echo json_encode([
+    "success" => true,
+    "count" => count($products),
+    "data" => $products
+]);

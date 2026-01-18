@@ -13,8 +13,8 @@ if (!isset($_GET['farmerId'])) {
     exit;
 }
 
-$farmerId = $_GET['farmerId'];
-error_log("🔍 Fetching products for Farmer ID: " . $farmerId);
+// ✅ Trim ID to remove invisible spaces
+$farmerId = trim($_GET['farmerId']);
 
 $db = new DB();
 $conn = $db->connect();
@@ -22,6 +22,11 @@ $conn = $db->connect();
 $product = new Product($conn);
 $products = $product->getByFarmer($farmerId);
 
-error_log("✅ Found " . count($products) . " products for Farmer ID: " . $farmerId);
-
-echo json_encode($products);
+// Return rich response for debugging
+echo json_encode([
+    "success" => true,
+    "debug_received_id" => $farmerId,
+    "debug_id_length" => strlen($farmerId),
+    "count" => count($products),
+    "data" => $products
+]);
