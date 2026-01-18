@@ -5,6 +5,14 @@
     # Block access to sensitive directories
     RewriteRule ^(classes|config|vendor|workers|\.env|composer\.*) - [F,L]
 
-    # Allow access to api/ and public/
-    # (Default behavior matches files)
+    # API requests should pass through to PHP files
+    RewriteCond %{REQUEST_URI} ^/api/ [OR]
+    RewriteCond %{REQUEST_URI} ^/utils/ [OR]
+    RewriteCond %{REQUEST_URI} \.php$
+    RewriteRule ^ - [L]
+
+    # React Router: Rewrite everything else to index.html
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.html [L]
 </IfModule>
