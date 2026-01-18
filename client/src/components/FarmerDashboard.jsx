@@ -73,12 +73,17 @@ const FarmerDashboard = () => {
       });
       formData.append('farmerId', farmerId);
 
-      await axios.post(`${API_BASE}/api/products/addProduct.php`, formData, {
+      const res = await axios.post(`${API_BASE}/api/products/addProduct.php`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      setNewProduct({ name: '', price: '', quantity: '', farmerName: '', contact: '', upi: '', image: null });
-      fetchProducts();
+      if (res.data.success) {
+        setNewProduct({ name: '', price: '', quantity: '', farmerName: '', contact: '', upi: '', image: null });
+        fetchProducts();
+        alert("✅ Product Added!");
+      } else {
+        alert("❌ Error: " + res.data.message);
+      }
     } catch (err) {
       console.error("❌ Add error:", err);
     }

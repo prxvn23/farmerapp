@@ -26,8 +26,8 @@ class Product {
             $result = $collection->insertOne($data);
             return $result->getInsertedCount() > 0;
         } catch (Exception $e) {
-            error_log("❌ Product Add Error: " . $e->getMessage());
-            return false;
+            // Rethrow so the API can see the message
+            throw new Exception("DB Error: " . $e->getMessage());
         }
     }
 

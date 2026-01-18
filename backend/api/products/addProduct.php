@@ -72,10 +72,12 @@ $product->image = $imageName;
 // ✅ Save to DB
 error_log("📝 Adding Product: " . json_encode($product));
 
-if ($product->add()) {
-    error_log("✅ Product Added Successfully: " . $name);
-    echo json_encode(["success" => true, "message" => "Product added successfully"]);
-} else {
-    error_log("❌ Failed to Add Product to DB");
-    echo json_encode(["success" => false, "message" => "Failed to add product"]);
+try {
+    if ($product->add()) {
+        error_log("✅ Product Added Successfully: " . $name);
+        echo json_encode(["success" => true, "message" => "Product added successfully"]);
+    }
+} catch (Exception $e) {
+    error_log("❌ Failed to Add Product: " . $e->getMessage());
+    echo json_encode(["success" => false, "message" => "Save Failed: " . $e->getMessage()]);
 }
