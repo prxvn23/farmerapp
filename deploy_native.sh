@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e  # 🛑 Exit immediately if any command fails
 
 echo "🚀 Starting Native Deployment..."
 
@@ -6,17 +7,16 @@ echo "🚀 Starting Native Deployment..."
 echo "📦 Installing Backend Dependencies..."
 cd backend
 
-# FIX: Resolve dependencies for this specific environment (PHP 8.3 & MongoDB Ext 1.15)
-# Remove lock file to allow resolution
+# FIX: Resolve dependencies for this specific environment
 if [ -f "composer.lock" ]; then
-    echo "⚠️ Removing composer.lock to resolve dependencies for this environment..."
+    echo "⚠️ Removing composer.lock to resolve dependencies..."
     rm composer.lock
 fi
 
 # Force compatible versions
 echo "🔧 Adjusting dependencies..."
-composer require endroid/qr-code:"^6.0" --no-update # Downgrade from 6.1 (PHP 8.4) to 6.0 (PHP 8.3)
-composer require mongodb/mongodb:"^1.15" --no-update # Match installed extension version
+composer require endroid/qr-code:"^6.0" --no-update 
+composer require mongodb/mongodb:"^1.15" --no-update 
 
 composer install --no-dev --optimize-autoloader
 cd ..
@@ -24,17 +24,22 @@ cd ..
 # 2. Build Frontend
 echo "⚛️ Building Frontend..."
 cd client
-npm install
-npm run build
+npm install && npm install lucide-react framer-motion # Ensure new deps are installed
+CI=false npm run build  # CI=false prevents warnings from failing build
 cd ..
 
+# Check if build worked
+if [ ! -f "client/build/index.html" ]; then
+    echo "❌ BUILD FAILED: client/build/index.html not found!"
+    exit 1
+fi
+
 # 3. Deploy to Apache Root
-# Validated from logs: Server extracts to ~/htdocs
 TARGET_DIR="$HOME/htdocs"
 
 echo "📂 Deploying to $TARGET_DIR..."
 
-# Clear old files (Be careful!)
+# Clear old files
 sudo rm -rf $TARGET_DIR/*
 
 # Copy Backend Files
