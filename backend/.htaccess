@@ -1,6 +1,6 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /
+    RewriteBase/
 
     # Block access to sensitive directories
     RewriteRule ^(classes|config|vendor|workers|\.env|composer\.*) - [F,L]
