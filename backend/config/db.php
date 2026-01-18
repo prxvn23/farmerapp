@@ -30,6 +30,8 @@ class DB {
         ];
 
         error_log("🔌 Connecting to MongoDB (Auth via Options)...");
+        
+        $dbName = getenv('MONGO_DB') ?: "farmerDB";
 
         try {
             // Pass options as second argument
