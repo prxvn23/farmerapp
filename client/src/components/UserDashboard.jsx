@@ -33,8 +33,11 @@ function UserDashboard() {
       const res = await axios.get(`${API_BASE}/api/products/getAllproducts.php`);
       console.log("📦 UserDashboard API Response:", res.data);
 
-      if (Array.isArray(res.data)) {
-        setProducts(res.data);
+      // Handle both { data: [...] } (New Debug Format) and [...] (Old Format)
+      const productsList = res.data.data || res.data;
+
+      if (Array.isArray(productsList)) {
+        setProducts(productsList);
       } else {
         console.warn("⚠️ API returned non-array for UserDashboard:", res.data);
         setProducts([]);

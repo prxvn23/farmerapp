@@ -43,9 +43,12 @@ const FarmerDashboard = () => {
       const res = await axios.get(`${API_BASE}/api/products/getProductsByFarmer.php?farmerId=${farmerId}`);
       console.log("📦 API Response:", res.data);
 
+      // Handle both { data: [...] } (New Debug Format) and [...] (Old Format)
+      const productsList = res.data.data || res.data;
+
       // Safety Check: Crash Prevention
-      if (Array.isArray(res.data)) {
-        setProducts(res.data);
+      if (Array.isArray(productsList)) {
+        setProducts(productsList);
       } else {
         console.warn("⚠️ API returned non-array:", res.data);
         setProducts([]); // Prevent crash
