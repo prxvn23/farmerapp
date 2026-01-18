@@ -17,24 +17,31 @@ $pass = "Ravipriya%40023"; // Encoded @
 $hosts = "ac-zz2vpgm-shard-00-00.talcjux.mongodb.net:27017,ac-zz2vpgm-shard-00-01.talcjux.mongodb.net:27017,ac-zz2vpgm-shard-00-02.talcjux.mongodb.net:27017";
 $dbName = "farmerDB";
 
-// 2. Different Auth Sources to Test
-$uris = [
-    "AuthSource-Admin" => "mongodb://{$user}:{$pass}@{$hosts}/{$dbName}?ssl=true&authSource=admin&retryWrites=true&w=majority",
-    "AuthSource-FarmerDB" => "mongodb://{$user}:{$pass}@{$hosts}/{$dbName}?ssl=true&authSource=farmerDB&retryWrites=true&w=majority",
-    "No-AuthSource" => "mongodb://{$user}:{$pass}@{$hosts}/{$dbName}?ssl=true&retryWrites=true&w=majority"
+// 2. Different Auth Strategies
+$strategies = [
+    "Legacy URI (Encoded Pass)" => [
+        "uri" => "mongodb://{$user}:{$pass}@{$hosts}/{$dbName}?ssl=true&authSource=admin&retryWrites=true&w=majority",
+        "options" => []
+    ],
+    "Options Array (Raw Pass)" => [
+        "uri" => "mongodb://{$hosts}/{$dbName}?ssl=true&authSource=admin&retryWrites=true&w=majority",
+        "options" => [
+            "username" => "pravinjordan023",
+            "password" => "Ravipriya@023", // Raw Password
+        ]
+    ]
 ];
 
-foreach ($uris as $label => $uri) {
+foreach ($strategies as $label => $config) {
     echo "\n-------------------------------------------------\n";
     echo "Testing: $label\n";
-    // Mask password in output
-    echo "URI: " . preg_replace('/(:)([^@]+)(@)/', '$1****$3', $uri) . "\n";
+    echo "URI: " . $config['uri'] . "\n";
     
     try {
-        $client = new Client($uri);
+        $client = new Client($config['uri'], $config['options']);
         $client->selectDatabase($dbName)->command(['ping' => 1]);
         echo "✅ SUCCESS! Connected via $label\n";
-        exit; // Stop on first success
+        exit;
     } catch (Exception $e) {
         echo "❌ FAILED: " . $e->getMessage() . "\n";
     }
