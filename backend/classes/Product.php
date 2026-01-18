@@ -10,19 +10,25 @@ class Product {
 
     // ✅ Add Product
     public function add() {
-        $collection = $this->conn->selectCollection("products");
-        $data = [
-            "name" => $this->name,
-            "price" => (int)$this->price,
-            "quantity" => (int)$this->quantity,
-            "farmerId" => $this->farmerId,
-            "farmerName" => $this->farmerName,
-            "contact" => $this->contact, // ✅ Used as 'contact' in DB
-            "upi" => $this->upi,
-            "image" => $this->image
-        ];
-        $result = $collection->insertOne($data);
-        return $result->getInsertedCount() > 0;
+        try {
+            $collection = $this->conn->selectCollection("products");
+            $data = [
+                "name" => $this->name,
+                "price" => (int)$this->price,
+                "quantity" => (int)$this->quantity,
+                "farmerId" => $this->farmerId,
+                "farmerName" => $this->farmerName,
+                "contact" => $this->contact,
+                "upi" => $this->upi,
+                "image" => $this->image,
+                "created_at" => new MongoDB\BSON\UTCDateTime()
+            ];
+            $result = $collection->insertOne($data);
+            return $result->getInsertedCount() > 0;
+        } catch (Exception $e) {
+            error_log("❌ Product Add Error: " . $e->getMessage());
+            return false;
+        }
     }
 
     // ✅ Get Products by Farmer ID

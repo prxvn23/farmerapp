@@ -37,13 +37,21 @@ if ($imageFile && $imageFile['tmp_name']) {
     $ext = pathinfo($imageFile['name'], PATHINFO_EXTENSION);
     $imageName = uniqid() . '.' . $ext;
 
-    // ✅ Save to /uploads folder
-    $uploadDir = '../../uploads/';
+    // ✅ Save to /uploads folder (Fixed path logic)
+    $uploadDir = __DIR__ . '/../../uploads/';
     if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
+        if (!mkdir($uploadDir, 0777, true)) {
+            error_log("❌ Failed to create upload directory: " . $uploadDir);
+            echo json_encode(["success" => false, "message" => "Server error: Cannot create upload folder"]);
+            exit;
+        }
     }
 
-    move_uploaded_file($imageFile['tmp_name'], $uploadDir . $imageName);
+    if (!move_uploaded_file($imageFile['tmp_name'], $uploadDir . $imageName)) {
+        error_log("❌ Failed to move uploaded file to: " . $uploadDir . $imageName);
+        echo json_encode(["success" => false, "message" => "Failed to upload image (Permission Denied?)"]);
+        exit;
+    }
 }
 
 // ✅ Connect to MongoDB
