@@ -46,20 +46,20 @@ try {
     $user->email = $data->email;
     $user->password = $data->password;
 
-    if ($user->login()) {
-        $response = [
-            "success" => true,
-            "user" => [
-                "id" => $user->id,
-                "role" => $user->role,
-                "name" => $user->name,
-                "email" => $user->email
-            ],
-            "message" => "✅ Login successful"
-        ];
-    } else {
-        throw new Exception("❌ Invalid credentials");
-    }
+    // If login succeeds, it returns true. 
+    // If it fails, it will now THROW an exception, so we don't need the else block.
+    $user->login(); 
+    
+    $response = [
+        "success" => true,
+        "user" => [
+            "id" => $user->id,
+            "role" => $user->role,
+            "name" => $user->name,
+            "email" => $user->email
+        ],
+        "message" => "✅ Login successful"
+    ];
 
 } catch (Exception $e) {
     $response = ["success" => false, "message" => $e->getMessage()];

@@ -45,34 +45,20 @@ class User {
 
 
     public function login() {
-        try {
-            error_log("🔍 Login Attempt for email: " . $this->email);
-            
-            // Check sanitization mismatch check
-            // logic matches register: htmlspecialchars(strip_tags($data->email));
-            // But we can't change it here easily without changing login.php
-            
-            $user = $this->collection->findOne(["email" => $this->email]);
-            
-            if (!$user) {
-                error_log("❌ User NOT FOUND in MongoDB.");
-                return false;
-            }
+        // No Try-Catch needed here, let Exceptions bubble up to login.php
+        $user = $this->collection->findOne(["email" => $this->email]);
+        
+        if (!$user) {
+            throw new Exception("❌ Debug: User '$this->email' NOT FOUND in DB.");
+        }
 
-            error_log("✅ User found in DB. Verifying password...");
-            if (password_verify($this->password, $user['password'])) {
-                error_log("✅ Password Verified!");
-                $this->id = (string)$user['_id'];
-                $this->name = $user['name'];
-                $this->role = $user['role'];
-                return true;
-            } else {
-                error_log("❌ Password Verification Failed.");
-                return false;
-            }
-        } catch (Exception $e) {
-            error_log("❌ Login Exception: " . $e->getMessage());
-            return false;
+        if (password_verify($this->password, $user['password'])) {
+            $this->id = (string)$user['_id'];
+            $this->name = $user['name'];
+            $this->role = $user['role'];
+            return true;
+        } else {
+            throw new Exception("❌ Debug: Password verification failed.");
         }
     }
 }
