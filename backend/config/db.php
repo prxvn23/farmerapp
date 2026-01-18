@@ -18,15 +18,15 @@ class DB {
         ini_set('display_errors', 1);
 
         // DEBUG: Force Prod URI with RESOLVED HOSTS
-        // BACK TO BASICS: Legacy String with URL Encoded Password
+        // NEW PASSWORD (No Special Chars) - Simple Legacy String
         
         $user = "pravinjordan023";
-        $pass = "Ravipriya%40023"; // Encoded @
+        $pass = "Ravipriya023"; // No special chars!
         $hosts = "ac-zz2vpgm-shard-00-00.talcjux.mongodb.net:27017,ac-zz2vpgm-shard-00-01.talcjux.mongodb.net:27017,ac-zz2vpgm-shard-00-02.talcjux.mongodb.net:27017";
         
-        // REMOVED replicaSet (to avoid mismatch errors)
         // KEPT ssl=true (Required by Atlas)
         // KEPT authSource=admin (Required for User)
+        // REMOVED replicaSet (Let driver handle it)
         $params = "farmerDB?ssl=true&authSource=admin&retryWrites=true&w=majority";
         
         $uri = "mongodb://{$user}:{$pass}@{$hosts}/{$params}";

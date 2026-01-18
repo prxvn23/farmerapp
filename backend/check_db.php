@@ -13,13 +13,13 @@ echo "Attempting MongoDB Connection...\n";
 
 // 1. Define Credentials
 $user = "pravinjordan023";
-$pass = "Ravipriya%40023"; // Encoded @
+$pass = "Ravipriya023"; // NEW PASSWORD
 $hosts = "ac-zz2vpgm-shard-00-00.talcjux.mongodb.net:27017,ac-zz2vpgm-shard-00-01.talcjux.mongodb.net:27017,ac-zz2vpgm-shard-00-02.talcjux.mongodb.net:27017";
 $dbName = "farmerDB";
 
 // 2. Different Auth Strategies
 $strategies = [
-    "Legacy URI (Encoded Pass)" => [
+    "Legacy URI (New Pass)" => [
         "uri" => "mongodb://{$user}:{$pass}@{$hosts}/{$dbName}?ssl=true&authSource=admin&retryWrites=true&w=majority",
         "options" => []
     ],
