@@ -15,33 +15,28 @@ class DB {
         
         // DEBUG: Force Prod URI with RESOLVED HOSTS (Bypassing SRV/DNS & Special Char issues)
         // DEBUG: Force Prod URI with RESOLVED HOSTS
-        // Using Options Array for Auth to avoid Special Character (@) encoding issues
+        // BACK TO BASICS: Legacy String with URL Encoded Password
         
+        $user = "pravinjordan023";
+        $pass = "Ravipriya%40023"; // Encoded @
         $hosts = "ac-zz2vpgm-shard-00-00.talcjux.mongodb.net:27017,ac-zz2vpgm-shard-00-01.talcjux.mongodb.net:27017,ac-zz2vpgm-shard-00-02.talcjux.mongodb.net:27017";
-        $params = "farmerDB?tls=true&authSource=admin&retryWrites=true&w=majority";
+        $params = "farmerDB?ssl=true&replicaSet=atlas-zz2vpgm-shard-0&authSource=admin&retryWrites=true&w=majority";
         
-        // Pure URI without credentials
-        $uri = "mongodb://{$hosts}/{$params}";
+        $uri = "mongodb://{$user}:{$pass}@{$hosts}/{$params}";
 
-        // Raw Credentials in Options
-        $options = [
-            'username' => 'pravinjordan023',
-            'password' => 'Ravipriya@023', // Raw Password
-            'authSource' => 'admin', // Force Auth against Admin DB
-        ];
-
-        error_log("🔌 Connecting to MongoDB (Auth via Options)...");
+        error_log("🔌 Connecting to MongoDB URI: " . $uri);
         
-        $dbName = getenv('MONGO_DB') ?: "farmerDB";
+        // Uncomment to see the URI in the browser response (Temporary Debug)
+        // die(json_encode(["error" => "Debug URI", "uri" => $uri]));
 
         try {
-            // Pass options as second argument
-            $client = new Client($uri, $options);
-            $this->conn = $client->selectDatabase($dbName);
+            // No Options Array - Pure URI
+            $client = new Client($uri);
+            $this->conn = $client->selectDatabase("farmerDB");
             return $this->conn;
         } catch (Exception $e) {
             error_log("❌ MongoDB Connection Error: " . $e->getMessage());
-            die("❌ MongoDB Connection Error: " . $e->getMessage());
+            die(json_encode(["success" => false, "message" => "❌ DB Error: " . $e->getMessage()]));
         }
     }
 }
