@@ -41,7 +41,15 @@ const FarmerDashboard = () => {
   const fetchProducts = async () => {
     try {
       const res = await axios.get(`${API_BASE}/api/products/getProductsByFarmer.php?farmerId=${farmerId}`);
-      setProducts(res.data);
+      console.log("📦 API Response:", res.data);
+
+      // Safety Check: Crash Prevention
+      if (Array.isArray(res.data)) {
+        setProducts(res.data);
+      } else {
+        console.warn("⚠️ API returned non-array:", res.data);
+        setProducts([]); // Prevent crash
+      }
     } catch (err) {
       console.error('❌ Fetch error:', err);
     }
