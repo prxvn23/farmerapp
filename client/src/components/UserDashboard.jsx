@@ -29,10 +29,19 @@ function UserDashboard() {
 
   const fetchAllProducts = async () => {
     try {
+      console.log("🛒 Fetching all products...");
       const res = await axios.get(`${API_BASE}/api/products/getAllproducts.php`);
-      setProducts(res.data);
+      console.log("📦 UserDashboard API Response:", res.data);
+
+      if (Array.isArray(res.data)) {
+        setProducts(res.data);
+      } else {
+        console.warn("⚠️ API returned non-array for UserDashboard:", res.data);
+        setProducts([]);
+      }
     } catch (err) {
-      console.error('Fetch error:', err);
+      console.error('❌ Fetch error:', err);
+      // Optional: alert("Failed to load products.");
     }
   };
 
