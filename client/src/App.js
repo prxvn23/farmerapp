@@ -1,10 +1,10 @@
 import React from 'react';
 import './index.css';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Login from './components/Login';
 import Register from './components/Register';
 import FarmerDashboard from './components/FarmerDashboard';
-import UserDashboard from './components/UserDashboard';
+import UserDashboard from "./components/UserDashboard"; // Fixed quote style
 import DashboardSelector from './components/DashboardSelector';
 
 function DashboardSelectorWrapper() {
