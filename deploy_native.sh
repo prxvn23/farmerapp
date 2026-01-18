@@ -52,5 +52,13 @@ echo "🔐 Fixing Permissions..."
 sudo chown -R www-data:www-data $TARGET_DIR
 sudo chmod -R 755 $TARGET_DIR
 
+# Create and Fix Uploads Directory
+if [ ! -d "$TARGET_DIR/uploads" ]; then
+    echo "📂 Creating uploads directory..."
+    mkdir -p "$TARGET_DIR/uploads"
+fi
+sudo chown -R www-data:www-data "$TARGET_DIR/uploads"
+sudo chmod -R 777 "$TARGET_DIR/uploads"
+
 echo "✅ Deployment Complete!"
 echo "👉 Visit: https://farmer.selfmade.lol"
