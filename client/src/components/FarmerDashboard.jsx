@@ -138,9 +138,13 @@ const FarmerDashboard = () => {
       transition={{ duration: 0.8, ease: "easeInOut" }}
     >
       <div className="flex justify-between mb-6">
-        <div>👤 Logged in as: <strong>{email}</strong></div>
+        <div>
+          <div>👤 Logged in as: <strong>{email}</strong></div>
+          <div className="text-xs text-gray-500 mt-1">🆔 Farmer ID: <span className="font-mono bg-yellow-100 px-1 rounded">{farmerId}</span></div>
+          <div className="text-xs text-blue-500 mt-1">Found: {products.length} products</div>
+        </div>
         <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-          onClick={handleLogout} className="bg-red-600 text-white px-4 py-1 rounded">
+          onClick={handleLogout} className="bg-red-600 text-white px-4 py-1 rounded h-10">
           Logout
         </motion.button>
       </div>
