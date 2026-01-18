@@ -29,6 +29,10 @@ $strategies = [
             "username" => "pravinjordan023",
             "password" => "Ravipriya@023", // Raw Password
         ]
+    ],
+    "Direct Admin DB Path" => [
+        "uri" => "mongodb://{$user}:{$pass}@{$hosts}/admin?ssl=true&retryWrites=true&w=majority", // Path is /admin
+        "options" => []
     ]
 ];
 
