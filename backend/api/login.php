@@ -1,21 +1,15 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Start output buffering immediately to catch any include/require noise
-ob_start();
-
-// Allow local + deployed frontends
 // ✅ Centralized CORS
 require_once __DIR__ . '/../utils/cors.php';
 handleCors();
+
+// ✅ CSRF & Session Init (Must be before output)
+require_once __DIR__ . '/../utils/csrf.php';
 
 header("Content-Type: application/json");
 
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../classes/User.php';
-require_once __DIR__ . '/../utils/csrf.php';
 
 // Parse JSON body
 $data = json_decode(file_get_contents("php://input"));

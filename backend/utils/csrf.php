@@ -1,16 +1,15 @@
 <?php
 // ✅ Configure session for Cross-Origin (Localhost Port 3000 -> 8000)
 // For HTTP localhost, 'SameSite' => 'Lax' is best. 'None' requires 'Secure' (HTTPS).
-session_set_cookie_params([
-    'lifetime' => 0,
-    'path' => '/',
-    'domain' => '', // Valid for current host
-    'secure' => false, // Set to true if using HTTPS
-    'httponly' => true,
-    'samesite' => 'Lax'
-]);
-
 if (session_status() === PHP_SESSION_NONE) {
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path' => '/',
+        'domain' => '',
+        'secure' => false,
+        'httponly' => true,
+        'samesite' => 'Lax'
+    ]);
     session_start();
 }
 

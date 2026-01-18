@@ -29,8 +29,8 @@ npm run build
 cd ..
 
 # 3. Deploy to Apache Root
-# Assumes /var/www/html is the root
-TARGET_DIR="/var/www/html"
+# Validated from logs: Server extracts to ~/htdocs
+TARGET_DIR="$HOME/htdocs"
 
 echo "📂 Deploying to $TARGET_DIR..."
 
